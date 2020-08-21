@@ -13,6 +13,9 @@ B) n2prime
 C) o2n2_ncp
 - code for calculating NCP from underway O2/N2 measurements, following Reuer et al. (2007), Kaiser et al. (2005) and Izett et al., (in prep)
 
+D) ancillary_scripts
+- scripts required to run the other scripts listed above
+
 Refer to the following publications for details:
 Izett, R.I. & Tortell, P.D. In Prep. ΔO2/N2' as a tracer of mixed layer net community production: Theoretical considerations and proof-of-concept.
 
