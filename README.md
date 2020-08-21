@@ -10,6 +10,9 @@ B) n2prime
 - code for calculating N2' (N2-prime) from simulated (see above) and real datasets following Izett & Tortel (in prep) and Izett et al. (in prep)
 - example data (simulated and real) for calculating N2' and replicating results from Izett & Tortell (in prep) and Izett et al. (in prep)
 
+C) o2n2_ncp
+- code for calculating NCP from underway O2/N2 measurements, following Reuer et al. (2007), Kaiser et al. (2005) and Izett et al., (in prep)
+
 Refer to the following publications for details:
 Izett, R.I. & Tortell, P.D. In Prep. ΔO2/N2' as a tracer of mixed layer net community production: Theoretical considerations and proof-of-concept.
 
