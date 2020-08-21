@@ -1,0 +1,16 @@
+O2N2_NCP
+
+This repository consists of a toolbox of Matlab scripts to calculate NCP from O2 and N2 data. Contents include:
+
+A) o2n2ar_1d_model
+- code for performing simulations using a 1D mixed layer gas model (details in Izett & Tortell, in prep)
+- example data / forcing file to replicate one set of results from Izett & Tortell (in prep)
+
+B) n2prime
+- code for calculating N2' (N2-prime) from simulated (see above) and real datasets following Izett & Tortel (in prep) and Izett et al. (in prep)
+- example data (simulated and real) for calculating N2' and replicating results from Izett & Tortell (in prep) and Izett et al. (in prep)
+
+Refer to the following publications for details:
+Izett, R.I. & Tortell, P.D. In Prep. ΔO2/N2' as a tracer of mixed layer net community production: Theoretical considerations and proof-of-concept.
+
+Izett et al. In Prep. Evaluation of ΔO2/N2' as a tracer of mixed layer net community production: Field validation against ΔO2/Ar measurements in Subarctic Northeast Pacific and Canadian Arctic Ocean waters.
