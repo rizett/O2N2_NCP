@@ -155,12 +155,12 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
         
         %Definition of O2 re-equilibration time from Izett & Tortell, 2020
         %use weighted mixing coefficient and mld (if time-variable values supplied)
-        tro2(2) = -log(0.01)./(kwo2+kwz).*mldw; 
+        tro2(2) = -log(0.005)./(kwo2+kwz).*mldw; 
         
         if tro2(2) < 5; 
-            tro2 = round(tro2(1)); 
+            tro2 = ceil(tro2(1)); 
         else
-            tro2 = round(tro2(2));
+            tro2 = ceil(tro2(2));
         end
         if tro2 < 5; tro2 = 5; end
         
@@ -175,7 +175,7 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
         
     %Evaluate MLD model
         %Indices over which to evaluate Ar and N2 
-            bi = length(new_t) - ti:length(new_t);    
+            bi = length(new_t) - ti : length(new_t);    
 
         %Set initial conditions and respone variables
             respmat_n2 = nan(1,numel(bi)); 
@@ -190,18 +190,18 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
             for jj = 2:numel(bi)
                 
                 %Variables
-                    here = bi(jj)-1;
+                    here = bi(jj-1);
                     next = bi(jj);
 
-                    h       = nanmean(mld([here,next]));
-                    wind    = nanmean(u10([here,next]));
-                    icec    = nanmean(ice([here,next]));
-                    deep_n2 = nanmean(n2deep([here,next]));
-                    deep_ar = nanmean(ardeep([here,next]));
-                    pslp    = nanmean(slp([here,next]));
-                    kappa   = nanmean(kz([here,next]));   
-                    sal     = nanmean(mld_s([here,next]));
-                    tem     = nanmean(mld_t([here,next]));
+                    h       = nanmean(mld([here]));
+                    wind    = nanmean(u10([here]));
+                    icec    = nanmean(ice([here]));
+                    deep_n2 = nanmean(n2deep([here]));
+                    deep_ar = nanmean(ardeep([here]));
+                    pslp    = nanmean(slp([here]));
+                    kappa   = nanmean(kz([here]));   
+                    sal     = nanmean(mld_s([here]));
+                    tem     = nanmean(mld_t([here]));
                 
                     fn2     = zeros(1,4);
                     far     = zeros(1,4);
@@ -290,7 +290,6 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
                             fn2([3,4]) = [0 0];
 
                         %Calc. diffusive flux (mmol/m2/d)
-                        %fas_L13(respmat_ar(jj-1)/1000,wind,sal,tem,pslp./1013.25,'ar',1);
                             far(2)= fas_Fd(respmat_ar(jj-1)/1000,wind,sal,tem,pslp./1013.25,'ar','BM16',1) .* (1-icec) *1000.*3600.*24; %mol/m2/s --> mmol/m2/d
                             fn2(2)= fas_Fd(respmat_n2(jj-1)/1000,wind,sal,tem,pslp./1013.25,'n2','BM16',1) .* (1-icec) *1000.*3600.*24; %mol/m2/s --> mmol/m2/d
                     end
@@ -307,7 +306,7 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
                 respmat_n2 = 100*respmat_n2 ./ (n2sol(bi).*slp(bi)./1013.25);
         
             %Calculate the difference between modeled N2 and Ar on the last day of calculations
-                dif_resp = nanmean(respmat_n2(end-1/dt:end)) - nanmean(respmat_ar(end-1/dt:end));
+                dif_resp = respmat_n2(end) - respmat_ar(end);
                 
             %N2-prime is observed N2sat minus modeled difference between N2 and Ar
                 n2pr = n2sat - dif_resp; %[%]

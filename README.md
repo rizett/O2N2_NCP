@@ -1,4 +1,4 @@
-O2N2_NCP
+﻿O2N2_NCP
 
 This repository consists of a toolbox of Matlab scripts to calculate NCP from O2 and N2 data. Contents include:
 
@@ -17,6 +17,6 @@ D) ancillary_scripts
 - scripts required to run the other scripts listed above
 
 Refer to the following publications for details:
-Izett, R.I. & Tortell, P.D. In Prep. ΔO2/N2' as a tracer of mixed layer net community production: Theoretical considerations and proof-of-concept.
+Izett, R.I. & Tortell, P.D. In review. ΔO2/N2' as a tracer of mixed layer net community production: Theoretical considerations and proof-of-concept.
 
 Izett et al. In Prep. Evaluation of ΔO2/N2' as a tracer of mixed layer net community production: Field validation against ΔO2/Ar measurements in Subarctic Northeast Pacific and Canadian Arctic Ocean waters.
