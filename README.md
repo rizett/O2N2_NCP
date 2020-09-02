@@ -7,8 +7,9 @@ A) o2n2ar_1d_model
 - example data / forcing file to replicate one set of results from Izett & Tortell (in prep)
 
 B) n2prime
-- code for calculating N2' (N2-prime) from simulated (see above) and real datasets following Izett & Tortel (in prep) and Izett et al. (in prep)
+- code for calculating N2' (N2-prime) from simulated (see above) and real datasets following Izett & Tortel (in review) and Izett et al. (in prep)
 - example data (simulated and real) for calculating N2' and replicating results from Izett & Tortell (in prep) and Izett et al. (in prep)
+- output from model simulations described in Izett & Tortell (in review)
 
 C) o2n2_ncp
 - code for calculating NCP from underway O2/N2 measurements, following Reuer et al. (2007), Kaiser et al. (2005) and Izett et al., (in prep)
