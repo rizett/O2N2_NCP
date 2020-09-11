@@ -1,7 +1,6 @@
-O2N2_NCP_toolbox
-10.5281/zenodo.4024926
-R. W. Izett
-University of British Columbia, Vancouver, Canada
+O2N2_NCP_toolbox (10.5281/zenodo.4024926).
+R. W. Izett.
+University of British Columbia, Vancouver, Canada.
 
 This repository consists of a toolbox of Matlab scripts to calculate NCP from O2 and N2 data. Contents include:
 
