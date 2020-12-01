@@ -35,13 +35,13 @@ clear all; close all; clc
 % Identify files containing forcing data
     %Note: input should be full path directory with .mat extension
     %Atmospheric and surface ocean focing
-    force_env = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\Izett&Tortell2020_Simulations\2017-NEP-offshore_met-forcing_v20191031.mat';
+    force_env = 'directory\to\forcing\data\2017-NEP-offshore_met-forcing_v20191031.mat';
     %Initial profile
-    force_pro = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\Izett&Tortell2020_Simulations\NEP-Summer-offshore_profile-ini_v20191031.mat';
+    force_pro = 'directory\to\forcing\data\NEP-Summer-offshore_profile-ini_v20191031.mat';
     
 % Identify directory where output results and figure will be saved
-    res_save_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';
-    fig_save_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';
+    res_save_dir = 'output\directory';
+    fig_save_dir = 'output\directory';
     
 % Specify simulation name
     sim_name = 'ExIF_1c';
@@ -207,13 +207,13 @@ clear all; close all; clc
 % Identify files containing forcing data
     %Note: input should be full path directory with .mat extension
     %Atmospheric and surface ocean focing
-    force_env = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\Izett&Tortell2020_Simulations\NEP_smooth1011_met-forcing_v20200402.mat'
+    force_env = 'directory\to\forcing\data\NEP_smooth1011_met-forcing_v20200402.mat';
     %Initial profile
-    force_pro = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\Izett&Tortell2020_Simulations\NEP_smooth1011_2010_profile-ini_v20200402.mat'
+    force_pro = 'directory\to\profile\data\NEP_smooth1011_2010_profile-ini_v20200402.mat';
     
 % Identify directory where output results and figure will be saved
-    res_save_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';
-    fig_save_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';
+    res_save_dir = 'output\directory';
+    fig_save_dir = 'output\directory';
     
 % Specify simulation name
     sim_name = 'Real-OSPc';
@@ -228,15 +228,15 @@ clear all; close all; clc
         dom.strt_day        = 1;        %starting day of model run (day of month)
         dom.days            = 500;      %number of days to run
         %modify kz below for time variability
-        dom.rkz_surf        = [];       %constant surface diffusivity (m2/s); leave empty, [], or set to 0 if no mixing
+            dom.rkz_surf        = [];       %constant surface diffusivity (m2/s); leave empty, [], or set to 0 if no mixing
         %modify biol below for time variability
-        dom.biol            = 0;        %mixed layer NCP [mmol o2/m2/d]
+            dom.biol            = 0;        %mixed layer NCP [mmol o2/m2/d]
         %modify dN2/Ar_deep below for time variability
-        dom.dn2ar_deep      = 0.075;    %subsurface dN2/Ar (%/100)
-        dom.wind_scale      = 1;        %wind speed scaling factor
-        dom.o2_sat_start    = 1;        %starting O2 saturation state
-        dom.sat_start       = 1;        %starting Ar and N2 saturation state
-        dom.param           = 'l13';    %Air-sea exchange parameterization; choose from l13, s09, v10
+            dom.dn2ar_deep      = 0.075;    %subsurface dN2/Ar (%/100)
+            dom.wind_scale      = 1;        %wind speed scaling factor
+            dom.o2_sat_start    = 1;        %starting O2 saturation state
+            dom.sat_start       = 1;        %starting Ar and N2 saturation state
+            dom.param           = 'l13';    %Air-sea exchange parameterization; choose from l13, s09, v10
         %OPTIONAL (uncomment)
         %dom.n2fix = N2-fixation rate (mmol/m2/d)
         %dom.sar_deep = subsurface Ar supersaturation anomaly (%/100)
@@ -292,13 +292,13 @@ clear all; close all; clc
 %--- Modify time-variabilie forcing components
     %kz, eddy diffusivity
         %Values from Cronin et al., 2015
-        t_cronin = datenum(0,[1:24],0); %months over which kz data are extracted
+        t_kz = datenum(0,[1:24],0); %months over which kz data are extracted
         kz = [[3.7 4.7 5.1 4.5 3.4 2.5 1.7 1.4 1.3 1.4 1.9 2.6]-.5] * 1e-4; %Cronin et al. kz values
         kz = [kz,kz];    
         t0 = datenum(0,dom.strt_mon,dom.strt_day);
         t_model = t0:dom.dt:t0+dom.days; %time array in model
-        dom.rkz_surf = interp1(t_cronin,kz,t_model,'spline');
-        clear t_cronin kz t0
+        dom.rkz_surf = interp1(t_kz,kz,t_model,'spline');
+        clear t_kz kz t0
         
     %MLD
         %Based on observations from OSP (see within 'met' structure)
@@ -306,7 +306,7 @@ clear all; close all; clc
         dom.mld = interp1(t_mld,met.mld,t_model,'spline'); 
         clear t_mld
         
-    %NCP
+    %NCP (can set to 0 if you're not worried about modelling O2 production)
         %Values from Fassbender et al., 2016
         t_fas = datenum(0,[1:24],0); %months over which NCP data are extracted
         n = [-9,-2,4,18,25,8,12,14,10,0,-10,-15]*1.4; %NCP values from Fassbender et al.
@@ -315,7 +315,7 @@ clear all; close all; clc
         clear t_fas n
         
     %Deep dN2/Ar and deep dAr
-        %Values from Hamme et al., 2019
+        %Values from Hamme et al., 2019 @ OSP
         %dn2/ar
         t_hamme = datenum(0,[2,6,8,14,18,20],0);  %months over which gas data are extracted
         deep = [.5 .25 0 .5 .25 0]/100; %gas data from Hamme et al., 2019
@@ -410,10 +410,10 @@ clear all; close all; clc
 % INPUT INFORMATION
 
 %Identify directory where output files are saved
-    mod_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';
+    mod_dir = 'mode\data\dir';
     
 % Identify directory where output figure will be saved
-    fig_save_dir = 'C:\Users\Robert\Desktop\Data\MIMS-vs-PIGI_analyses\Theoretical\test';    
+    fig_save_dir = 'output\directory';    
     
 %Identify simulations for which N2' calculations will be performed
     %These should match the simulation names set above

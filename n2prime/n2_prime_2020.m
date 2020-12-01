@@ -66,7 +66,7 @@
 %   Proof-of-Concept. Global Biogeochemical Cycles.
 %--------------------------------------------------------------------------
 
-function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
+function [n2pr,tro2] = n2_prime_2020(backdat,N,mix,err)
 
 %--- Set model domain parameters
     dt = backdat.dt; %time-increment, days
@@ -90,6 +90,45 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
         ice = backdat.ice(end-ti:end);
     end
     ice(ice==1) = 0.99;
+    
+%--- Adjust parameters by error if input variable 'err' provided
+    if exist('err','var')
+        if isfield(err,'kz')
+            e = rand(size(kz)) .* err.kz;
+                kz = kz + (e - nanmean(e));
+                clear e
+        end
+        if isfield(err,'deep')
+            e = rand(size(n2deep)) .* err.deep;
+                e = e-nanmean(e);
+                n2deep = n2deep .*(1+e);
+                clear e
+        end
+        if isfield(err,'mld')
+            e = rand(size(mld)) .* err.mld;
+                mld = mld + (e - nanmean(e));
+                clear e
+        end
+        if isfield(err,'sst')
+            e = rand(size(mld_t)) .* err.sst;
+                mld_t = mld_t + (e - nanmean(e));
+                clear e
+        end
+        if isfield(err,'u10')
+            e = rand(size(u10)) .* err.u10;
+                u10 = u10 + (e - nanmean(e));
+                clear e
+        end
+        if isfield(err,'slp')
+            e = rand(size(slp)) .* err.slp;
+                slp = slp + (e - nanmean(e));
+                clear e
+        end
+        if isfield(err,'beta')
+            e = rand(1) .* 0.3;
+            backdat.beta = backdat.beta + (e-.15+1);
+        end
+    end    
     
 %--- Get N2 and Ar equilibrium concentrations over backdat time period, mmol/m3
     n2sol = N2sol(mld_s,mld_t).*sw_dens(mld_s,mld_t,0)./1000;
@@ -294,6 +333,29 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
                             fn2(2)= fas_Fd(respmat_n2(jj-1)/1000,wind,sal,tem,pslp./1013.25,'n2','BM16',1) .* (1-icec) *1000.*3600.*24; %mol/m2/s --> mmol/m2/d
                     end
                     
+                %Apply errors to gas flux terms, if relevant
+                    if exist('err','var')
+                        if isfield(err,'fd')
+                            e = rand(1) .* 0.3;
+                                far(2) = far(2) .* (e-.15+1);
+                                fn2(2) = fn2(2) .* (e-.15+1);
+                                clear e
+                        end
+                        if isfield(err,'fp')
+                            e = rand(1) .* 0.3;
+                                far(3) = far(3) .* (e-.15+1);
+                                fn2(3) = fn2(3) .* (e-.15+1);
+                                clear e
+                            clear e
+                        end
+                        if isfield(err,'fc')
+                            e = rand(1) .* 0.3;
+                                far(4) = far(4) .* (e-.15+1);
+                                fn2(4) = fn2(4) .* (e-.15+1);
+                                clear e
+                        end
+                    end
+                    
                 %Sum fluxes and determine new gas concentrations (mmol/m3)
                     respmat_ar(jj) = nansum(far) ./ h .* dt + respmat_ar(jj-1);
                     respmat_n2(jj) = nansum(fn2) ./ h .* dt + respmat_n2(jj-1);
@@ -310,5 +372,6 @@ function [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
                 
             %N2-prime is observed N2sat minus modeled difference between N2 and Ar
                 n2pr = n2sat - dif_resp; %[%]
+                
         
 return
