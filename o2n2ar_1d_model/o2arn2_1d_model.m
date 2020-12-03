@@ -47,6 +47,9 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
         if isfield(dom,'mld')
             %if specified by user
             mld = dom.mld;
+            if numel(mld)==1;
+                mld = repmat(mld,size(tt));
+            end
         else 
             %otherwise, estimate from starting T/S profile
             mld = depML(sw_dens(profile.s,profile.t,profile.z),profile.z,[],'N');
@@ -425,7 +428,7 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
             fn2(kk,[4:5]) = fn2(kk,[4:5]) .* gas_beta;
             far(kk,[4:5]) = far(kk,[4:5]) .* gas_beta;
             
-            error('re-calc del-eq using new beta-scaled terms')
+%             error('re-calc del-eq using new beta-scaled terms')
         
         %Convert air-sea flux units
             fo2(kk,[3:5]) = fo2(kk,[3:5]).*1000.*3600.*24./mld(kk-1); %mol/m2/s --> mmol/m3/d
