@@ -4,9 +4,13 @@
 %
 % INPUT:
 %   met = structure containing atmospheric and ocean surface forcing data
-%   profile = structure containing starting profile / initial conditions data
-%   dom = structure containing information about model / run domain
+%       (see below for further details)
+%   profile = structure containing starting profile / initial conditions
+%       data (see below)
+%   dom = structure containing information about model / run domain 
+%       (see below)
 %   expt = (optional) structure containing experimental forcing conditions
+%       (see below)
 % 
 % OUTPUT:
 %   model = structure containing time-variable model output
@@ -15,12 +19,43 @@
 %   R. Izett
 %   rizett@eoas.ubc.ca
 %   UBC Oceanography
-%   Last modified: August 2020
-
+%   Last modified: January 2021
+% 
 % REFERENCES:
-% Izett, R. W. and Tortell, P. D. YYYY. delO2/N2' as a Tracer of Mixed Layer
-%   Net Community Production: Theoretical Considerations and 
+% Izett, R. W. and Tortell, P. D. In review. delO2/N2' as a Tracer of 
+%   Mixed Layer Net Community Production: Theoretical Considerations and 
 %   Proof-of-Concept.
+%
+% INPUT STRUCTURE COMPONENTS
+% met:
+%     time = time stamp [days] (1-D array)
+%     u10 = wind speed at 10 m [m/s] (1-D array)
+%     pw = Ekman pumping velocity multiplied by surface density [m/s * kg/m3] (1-D array)
+%     slp = sea level pressure [mbar] (1-D array)
+%     sst = sea surfac temperature [deg-C] (1-D array)
+%     ice_t = (optional) time stamp for ice data [days] (1-D array)
+%     sea_ice = (optional) sea ice concetration [%/100] (1-D array)
+% profile:
+%     z = water column depth [m] (1-D array)
+%     t = water column temperature [deg-C] (1-D array)
+%     s = water column salinity [PSU] (1-D array)
+% dom:
+%     dt = simulation time-increment [days] (1x1)
+%     dz = depth of subsurface box [meters below MLD] (1x1)
+%     strt_mon = starting month of model run corresponding with forcing/input data (1x1)
+%     strt_day = starting day of model run [day of month] (1x1)
+%     days = number of days to run (1x1)
+%     rkz_surf = eddy diffusivity at the base of MLD (m2/s); set to 0 if no mixing (1x1 or size of met arrays)
+%     biol = mixed layer NCP [mmol o2/m2/d] (1x1 or size of met arrays)
+%     mld = mixed layer depth [m] (1x1 or size of met arrays)
+%     dn2ar_deep = subsurface dN2/Ar [%/100] (1x1 or size of met arrays)
+%     wind_scale = wind speed scaling factor (NOT the bubble flux scaling coefficient) (1x1)
+%     o2_sat_start = starting O2 saturation state [%/100] (1x1)
+%     sat_start = starting Ar and N2 saturation state [%/100] (1x1)
+%     param = Air-sea exchange parameterization; choose from 'l13', 's09', 'v10'
+%     %OPTIONAL
+%     %n2fix = N2-fixation rate [mol/m2/d] (1x1)
+%     %sar_deep = subsurface Ar supersaturation anomaly [%/100] (1x1)          
 %--------------------------------------------------------------------------
 
 function model = o2arn2_1d_model(met, profile, dom, expt)
@@ -356,9 +391,9 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
             n2eq = N2sol(s_cycle(kk-1),t_cycle(kk-1)).*den_cycle(kk)./1000.*slp_cycle(kk-1)./1013.25;
                 
         %Advection flux on gases ([C]/d)
-            fo2(kk,1) = adv(o2(kk-1),o2_deep(kk-1),uw(kk-1).*3600.*24,dz(kk-1)); 
-            far(kk,1) = adv(ar(kk-1),ar_deep(kk-1),uw(kk-1).*3600.*24,dz(kk-1)); 
-            fn2(kk,1) = adv(n2(kk-1),n2_deep(kk-1),uw(kk-1).*3600.*24,dz(kk-1));
+            fo2(kk,1) = adv(o2(kk-1),o2_deep(kk-1),uw(kk-1).*3600.*24) ./ mld(kk-1); 
+            far(kk,1) = adv(ar(kk-1),ar_deep(kk-1),uw(kk-1).*3600.*24) ./ mld(kk-1); 
+            fn2(kk,1) = adv(n2(kk-1),n2_deep(kk-1),uw(kk-1).*3600.*24) ./ mld(kk-1);
             
         %Eddy diffusivity flux ([C]/d)
             fo2(kk,2)=eddy_diff(o2(kk-1),o2_deep(kk-1),kz(kk-1),dz(kk-1)) ./ mld(kk-1);
@@ -494,16 +529,16 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
 end
 
 %Advection flux
-function afl = adv(c_up,c_lo,w,dz)
-    % Calculate vertical advection flux [units c / d]
+function afl = adv(c_up,c_lo,w)
+    % Calculate vertical advection flux [units c * m / d]
     % w is m/d profile
     % c_up and c_lo are concentrations in upper and lower boxes
     
     %Vertical concentration gradient
-    c_der = (c_lo  - c_up)  ./ (dz); %units [c] / m
+    c_der = (c_lo  - c_up); %units [c]
    
     %Flux
-    afl = c_der .* w; %units [c]/m * m/d == [c]/d
+    afl = c_der .* w; %units [c] * m/d == [c] * m/d
 end
 
 %Eddy diffuvity flux

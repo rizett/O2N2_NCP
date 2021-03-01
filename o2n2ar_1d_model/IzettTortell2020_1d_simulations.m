@@ -59,6 +59,7 @@ clear all; close all; clc
         dom.biol            = 0;        %mixed layer NCP [mmol o2/m2/d]
         dom.dn2ar_deep      = 1.5/100;  %subsurface dN2/Ar (%/100)
         dom.wind_scale      = 1;        %wind speed scaling factor
+        dom.wind_beta       = 0.5;      %bubble flux scaling factor 
         dom.o2_sat_start    = 1;        %starting O2 saturation state
         dom.sat_start       = 1;        %starting Ar and N2 saturation state
         dom.param           = 'l13';    %Air-sea exchange parameterization; choose from l13, s09, v10
@@ -234,6 +235,7 @@ clear all; close all; clc
         %modify dN2/Ar_deep below for time variability
             dom.dn2ar_deep      = 0.075;    %subsurface dN2/Ar (%/100)
             dom.wind_scale      = 1;        %wind speed scaling factor
+            dom.wind_beta       = 0.5;      %bubble flux scaling factor 
             dom.o2_sat_start    = 1;        %starting O2 saturation state
             dom.sat_start       = 1;        %starting Ar and N2 saturation state
             dom.param           = 'l13';    %Air-sea exchange parameterization; choose from l13, s09, v10
