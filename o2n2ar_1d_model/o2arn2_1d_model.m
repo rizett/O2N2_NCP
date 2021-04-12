@@ -1,6 +1,6 @@
 %--------------------------------------------------------------------------
 % This function performs 1D box model calcualtions of O2, Ar and N2.
-% Refer to Izett & Tortell, 2020 for details
+% Refer to Izett & Tortell for details
 %
 % INPUT:
 %   met = structure containing atmospheric and ocean surface forcing data

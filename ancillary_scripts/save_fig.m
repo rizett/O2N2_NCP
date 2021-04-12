@@ -28,13 +28,6 @@ function fname = save_fig(dir,name,type,res)
         type = {'t'};
     end
     
-%--- set resolution
-    if nargin < 4
-        res = '-r500';
-    else
-        res = ['-r',num2str(res)];
-    end
-
 %--- Create figure name:
     if ispc %check if PC or mac
         fname = [dir,'\',name]; %PC
@@ -53,8 +46,21 @@ function fname = save_fig(dir,name,type,res)
         elseif  strcmp(type{kk},'f')            
             saveas(gcf,[fname,'.fig']);
         elseif  strcmp(type{kk},'hr')
+            % set resolution
+            if nargin < 4
+                res = '-r500';
+            else
+                res = ['-r',num2str(res)];
+            end
             print(gcf,[fname,'_high-res.jpg'],'-djpeg',res);
+        elseif strcmp(type{kk},'hr_tif')
+            % set resolution
+            if nargin < 4
+                res = 300;
+            end
+            exportgraphics(gcf,[fname,'_high-res.tif'],'Resolution',res)
         end
+            
     end
     
     

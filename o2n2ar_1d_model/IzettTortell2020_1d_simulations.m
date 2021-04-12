@@ -1,8 +1,8 @@
 %% README
 
 %THIS SCRIPT CONTAINS CODE TO PERFORM 1D NUMERICAL SIMULATIONS DESCRIBED IN
-%IZETT & TORTELL, 2020 (GBC). TWO EXAMPLES (for simulations ExIF-1c and
-%real-OSP c) ARE PROVIDED, WITH INPUT FORCING FILES. 
+%IZETT & TORTELL, in rev. TWO EXAMPLES (for simulations ExIF-1c and
+%OSP-FM) ARE PROVIDED, WITH INPUT FORCING FILES. 
 
 %SIMULATION RESULTS AND FIGURES ARE SAVED TO USER-DEFINED LOCATIONS.
 
@@ -15,9 +15,9 @@
 %   Last modified: July 2020
 
 %REFERENCES:
-% Izett, R. W. and Tortell, P. D. 2020. ?O2/N2' as a Tracer of Mixed Layer
+% Izett, R. W. and Tortell, P. D. In review. delO2/N2' as a Tracer of Mixed Layer
 %   Net Community Production: Theoretical Considerations and 
-%   Proof-of-Concept. Global Biogeochemical Cycles.
+%   Proof-of-Concept.
 
 %NOTE: 
 % Many of the functions used herewithin were wirtten by others, but are
