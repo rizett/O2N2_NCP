@@ -3,7 +3,7 @@
 % based on "historic" forcing datasets and observations of N2 saturation
 % state in seawater. Also estimates the mixed layer O2 requilibration
 % time-scale. 
-% Calculations based on details in Izett & Tortell, 2020.
+% Calculations based on details in Izett & Tortell, in rev.
 % 
 % USAGE:
 %   [n2pr,tro2] = n2_prime_2020(backdat,N,mix)
@@ -58,12 +58,12 @@
 %   R. Izett
 %   rizett@eoas.ubc.ca
 %   UBC Oceanography
-%   Last modified: Aug. 2020
+%   Last modified: Nov. 2020
 % 
 % REFERENCES:
-% Izett, R. W. and Tortell, P. D. 2020. delO2/N2' as a Tracer of Mixed Layer
-%   Net Community Production: Theoretical Considerations and 
-%   Proof-of-Concept. Global Biogeochemical Cycles.
+% Izett, R. W. and Tortell, P. D. In review. delO2/N2' as a Tracer of 
+%   Mixed Layer Net Community Production: Theoretical Considerations and 
+%   Proof-of-Concept.
 %--------------------------------------------------------------------------
 
 function [n2pr,tro2] = n2_prime_2020(backdat,N,mix,err)

@@ -198,7 +198,7 @@ clear all; close all; clc
     
 clearvars -except dom model profile met
 
-%% 2) Perform realistic simulation (e.g., Real-OSP c)
+%% 2) Perform realistic simulation (e.g., OSP-FM)
 
 clear all; close all; clc
 
@@ -208,32 +208,32 @@ clear all; close all; clc
 % Identify files containing forcing data
     %Note: input should be full path directory with .mat extension
     %Atmospheric and surface ocean focing
-    force_env = 'directory\to\forcing\data\NEP_smooth1011_met-forcing_v20200402.mat';
+    force_env = 'directory\to\forcing\data\OSP_met_input.mat';
     %Initial profile
-    force_pro = 'directory\to\profile\data\NEP_smooth1011_2010_profile-ini_v20200402.mat';
+    force_pro = []; %input profile information contained within the force_env file 
     
 % Identify directory where output results and figure will be saved
     res_save_dir = 'output\directory';
     fig_save_dir = 'output\directory';
     
 % Specify simulation name
-    sim_name = 'Real-OSPc';
+    sim_name = 'OSP-FM';
     %Note: the output results and figure file save names will contain this extension
     %e.g. 'o2arn2_1d_ExIF_1_vYYYYMMDD.mat' or 'o2arn2_1d_ExIF_1_vYYYYMMDD.jpg'
     
 % Setup simulation domain and conditions
     % Domain variables
         dom.dt              = 0.5;      %simulation time-increment (days)
-        dom.dz              = 25;       %depth of subsurface box (meters below MLD); subsurface properties are averaged over the depth range MLD to MLD + dom.dz 
+        dom.dz              = [];       %depth of subsurface box (meters below MLD); subsurface properties are averaged over the depth range MLD to MLD + dom.dz 
         dom.strt_mon        = 1;        %starting month of model run corresponding with forcing/input data
         dom.strt_day        = 1;        %starting day of model run (day of month)
-        dom.days            = 500;      %number of days to run
+        dom.days            = 740;      %number of days to run
         %modify kz below for time variability
             dom.rkz_surf        = [];       %constant surface diffusivity (m2/s); leave empty, [], or set to 0 if no mixing
         %modify biol below for time variability
             dom.biol            = 0;        %mixed layer NCP [mmol o2/m2/d]
         %modify dN2/Ar_deep below for time variability
-            dom.dn2ar_deep      = 0.075;    %subsurface dN2/Ar (%/100)
+            dom.dn2ar_deep      = [];       %subsurface dN2/Ar (%/100)
             dom.wind_scale      = 1;        %wind speed scaling factor
             dom.wind_beta       = 0.5;      %bubble flux scaling factor 
             dom.o2_sat_start    = 1;        %starting O2 saturation state
@@ -254,7 +254,9 @@ clear all; close all; clc
 
 %--- Load the input forcing and initial condition data files
     load(force_env);
-    load(force_pro); 
+    if ~isempty(force_pro)
+        load(force_pro); 
+    end
        
 %--- Set experimental conditions (if applicable)  
     if ~isempty(expt)
@@ -292,50 +294,49 @@ clear all; close all; clc
     end
     
 %--- Modify time-variabilie forcing components
+    t0 = datenum(0,dom.strt_mon,dom.strt_day);
+        t_model = t0:dom.dt:t0+dom.days; %time array in model
     %kz, eddy diffusivity
         %Values from Cronin et al., 2015
-        t_kz = datenum(0,[1:24],0); %months over which kz data are extracted
-        kz = [[3.7 4.7 5.1 4.5 3.4 2.5 1.7 1.4 1.3 1.4 1.9 2.6]-.5] * 1e-4; %Cronin et al. kz values
-        kz = [kz,kz];    
-        t0 = datenum(0,dom.strt_mon,dom.strt_day);
-        t_model = t0:dom.dt:t0+dom.days; %time array in model
-        dom.rkz_surf = interp1(t_kz,kz,t_model,'spline');
-        clear t_kz kz t0
+        dom.rkz_surf = interp1(met.time,met.kz_m2_s,t_model);
         
-    %MLD
-        %Based on observations from OSP (see within 'met' structure)
-        t_mld = datenum(0,met.mld_mon,1);
-        dom.mld = interp1(t_mld,met.mld,t_model,'spline'); 
-        clear t_mld
-        
-    %NCP (can set to 0 if you're not worried about modelling O2 production)
+    %MLD and dZ
+        %Based on observations from OSP 
+        dom.mld = interp1(met.time,met.mld_m,t_model);
+        dom.dz = interp1(met.time,met.dz_m,t_model);
+                
+    %NCP (can set to 0 if you're not modelling O2 production)
         %Values from Fassbender et al., 2016
         t_fas = datenum(0,[1:24],0); %months over which NCP data are extracted
-        n = [-9,-2,4,18,25,8,12,14,10,0,-10,-15]*1.4; %NCP values from Fassbender et al.
+        n = [-9,-2,4,18,25,8,12,14,10,0,-10,-15]*1.4; %NCP values from Fassbender et al.; 1.4 = photosynthetic quotient
         n = [n,n];    
-        dom.biol = interp1(t_fas,n,t_model,'spline');
+        dom.biol = nanmoving_average(interp1(t_fas,n,t_model,'cubic'),15);
         clear t_fas n
         
     %Deep dN2/Ar and deep dAr
         %Values from Hamme et al., 2019 @ OSP
-        %dn2/ar
-        t_hamme = datenum(0,[2,6,8,14,18,20],0);  %months over which gas data are extracted
-        deep = [.5 .25 0 .5 .25 0]/100; %gas data from Hamme et al., 2019
-        dom.dn2ar_deep = interp1(t_hamme,deep,t_model,'pchip');
-        dom.dn2ar_deep = nanmoving_average(dom.dn2ar_deep,60);
+        dom.dn2ar_deep = interp1(met.time,met.dn2ar_deep,t_model);
+        dom.sar_deep = interp1(met.time,met.ar_sat_deep,t_model);
         
-        %dar
-        t_hamme = datenum(0,[1,2,6,8,13,14,18,20],0);
-        deep = [0 0 1 1 0 0 1 1]/100+1;
-        dom.sar_deep = interp1(t_hamme,deep,t_model,'pchip'); %deep ar saturation
-        dom.sar_deep = nanmoving_average(dom.sar_deep,60);
-        clear t_hamme deep t_model 
+%--- Rename some variables in met file for compatibility with the model function
+    met2.time = met.time;
+    met2.u10 = met.u10_m_s;
+    met2.pw = met.ekman_pw;
+    met2.slp = met.slp_mbar;
+    met2.sst = met.sst_degC;
+    met2.sss = met.sss_psu;
+    met2.deep_time = met.deep_time;
+    met2.deep_t = met.deep_t_degC;
+    met2.deep_s = met.deep_s_psu;
+    met2.deep_d = met.deep_den_kgm3;
+    met2.deep_o2 = met.deep_o2_mmol_m3;
+    met=met2; clear met2
         
 %--- Run Model
     if ~isempty(expt)
-        model = o2arn2_1d_model(met, profile, dom, expt);
+        model = o2arn2_1d_model(met, [], dom, expt); %note: no profile input required for this run - OSP forcing conditions all contained within met file
     else
-        model = o2arn2_1d_model(met, profile, dom);
+        model = o2arn2_1d_model(met, [], dom);
     end
         
 %--- Output figure
@@ -419,7 +420,7 @@ clear all; close all; clc
     
 %Identify simulations for which N2' calculations will be performed
     %These should match the simulation names set above
-    sim = {'ExIF_1c';'Real-OSPc'};
+    sim = {'ExIF_1c';'OSP-FM'};
 
 %Specify number of days of data needed for calculations
     %i.e. estimate an upper limit of O2-residence time
@@ -479,7 +480,7 @@ clear all; close all; clc
                     backdat.mld_s   = repmat(model.mld_s(ti(end)),size(backdat.time));
 
                     %kz / upw [m/d]
-                    mix.kz          = (model.kz + model.upw.*model.mld) .* 3600 .* 24./ (model.domain.dz); %/d
+                    mix.kz          = (model.kz + model.upw.*model.dz) .* 3600 .* 24./ (model.domain.dz); %/d
                     mix.kz          = repmat(nanmean(mix.kz(ti(end))),size(backdat.time));
 
                     %deep N2 and Ar [mmol/m3]

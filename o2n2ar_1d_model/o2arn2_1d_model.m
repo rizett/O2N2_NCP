@@ -19,7 +19,7 @@
 %   R. Izett
 %   rizett@eoas.ubc.ca
 %   UBC Oceanography
-%   Last modified: January 2021
+%   Last modified: April 2021
 % 
 % REFERENCES:
 % Izett, R. W. and Tortell, P. D. In review. delO2/N2' as a Tracer of 
@@ -32,9 +32,15 @@
 %     u10 = wind speed at 10 m [m/s] (1-D array)
 %     pw = Ekman pumping velocity multiplied by surface density [m/s * kg/m3] (1-D array)
 %     slp = sea level pressure [mbar] (1-D array)
-%     sst = sea surfac temperature [deg-C] (1-D array)
+%     sst = sea surface temperature [deg-C] (1-D array)
+%     sss = sea surface salinity [PSU] (1-D array)
 %     ice_t = (optional) time stamp for ice data [days] (1-D array)
 %     sea_ice = (optional) sea ice concetration [%/100] (1-D array)
+%     deep_time = (optional) time stamp for deep conditions [days] (1-D array) 
+%     deep_t = (optional) subsurface temp [deg-C] (1-D array) 
+%     deep_s = (optional) subsurface S [PSU] (1-D array) 
+%     deep_d = (optional) subsurface density [kg/m3] (1-D array) 
+%     deep_o2 = (optional) subsurface O2 conc [mmol/m3] (1-D array) 
 % profile:
 %     z = water column depth [m] (1-D array)
 %     t = water column temperature [deg-C] (1-D array)
@@ -370,8 +376,7 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
         
         %Subsurface dN2/Ar, %
         model.dn2ar_deep   = 100.*((n2_deep./n2_deepeq)./(ar_deep./ar_deepeq)-1);
-        model.dn2ar_subs   = 100.*((n2_deep./(n2(1)./dom.sat_start))./(ar_deep./(ar(1)./dom.sat_start))-1); %relative to surface N2/Ar
-        
+                
         model
 
 %-----------------------
@@ -522,8 +527,7 @@ function model = o2arn2_1d_model(met, profile, dom, expt)
             model.o2_deq(end+1)         = deq(kk,1);
             model.ar_deq(end+1)         = deq(kk,2);
             model.n2_deq(end+1)         = deq(kk,3);
-            model.dn2ar_subs(end+1)     = 100.*((n2_deep(kk)./n2eq)./(ar_deep(kk)./areq)-1);
-                
+                            
     end
     
 end
@@ -539,6 +543,8 @@ function afl = adv(c_up,c_lo,w)
    
     %Flux
     afl = c_der .* w; %units [c] * m/d == [c] * m/d
+    
+    if w < 0; afl = 0; end % only permit upwelling.
 end
 
 %Eddy diffuvity flux
