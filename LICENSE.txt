@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2020 
+Copyright (c) 2021
 Philippe D. Tortell
 Robert W. Izett
 University of British Columbia, Vancouver, Canada

@@ -102,7 +102,7 @@ switch upper(param)
     case {'W14','W92A','W92B','SW07','HO06','NG00','LM86','BM16'}
         k = kgas(u10,Sc,param);
     otherwise
-        error('Only W14, W92a, W92b, Sw07, Ho06, Ng00 and LM86 are supported.');
+        error('Only W14, W92a, W92b, Sw07, Ho06, Ng00, LM86 & BM16 are supported.');
 end
 
 Fd = -k.*(C-slpc.*Geq);

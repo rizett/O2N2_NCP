@@ -94,18 +94,6 @@ function [ncp,kw_o2,tro2,wt_t] = calc_o2n2_ncp(do2n2,S,T,mld,u10mat,Ndays,dt,mod
             kw_weighting(k_o2(kk,end-wt_t(kk)*(1/dt):end), ...
                 dt, wt_t(kk), mldmat(kk,end-wt_t(kk)*(1/dt):end));
            
-        %re-do weighting if it MLD is ventilated in less than Ndays 
-        if ~(isnan(kw_o2(kk)))
-            ti = find(cumsum(fliplr(wt_o2(kk,:)).*fliplr(fr(kk,:)))>=0.95,1,'first').*dt;
-
-            if ti < wt_t(kk)
-                wt_t(kk) = ti;
-                [kw_o2(kk),wt_o2(kk,end-wt_t(kk)*(1/dt):end),fr(kk,end-wt_t(kk)*(1/dt):end)] = ...
-                    kw_weighting(k_o2(kk,end-wt_t(kk)*(1/dt):end), ...
-                        dt, wt_t(kk), mldmat(kk,end-wt_t(kk)*(1/dt):end));
-            end
-        end
-        
         %Estimate O2 residence time
             wtmld    = nansum(wt_o2(kk,end-wt_t(kk)*(1/dt):end) .* mldmat(kk,end-wt_t(kk)*(1/dt):end)) ./ nansum(wt_o2(kk,end-wt_t(kk)*(1/dt):end));
             

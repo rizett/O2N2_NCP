@@ -25,6 +25,16 @@ function [kw_wt,wt,fr] = kw_weighting(kw,dt,ndays,zml);
 % Adapted from time_weigted_kw_kaiser by M. Long (2007).
 %-------------------------------------------------------------------------
 
+%--- adjust length of zml
+    if numel(zml) == 1
+        zml = repmat(zml,size(kw));
+    end
+
+%--- Trim input
+    tot = ndays/dt;
+    kw = kw(end-tot:end);
+    zml = zml(end-tot:end);
+
 %--- Calculate fraction of mld ventilated in each step
     fr = kw .* dt ./ zml; %piston velocity [m/d] * t step [d] / mld [m]
     fr(fr >= 1) = 0.9999;
@@ -43,35 +53,5 @@ function [kw_wt,wt,fr] = kw_weighting(kw,dt,ndays,zml);
     prod = kw.*wt; %the product of kw * weight for each observation
     
     kw_wt = (sum(prod)) / (sum(wt)); 
-    
-% %--- flip wt and fr
-%     wt = flip(wt);
-%     fr = flip(fr);
-    
-% 
-% %%%%%%%%OLD%%%%%%%%
-% %--- Flip kw and zml vectors 
-%      % such that kw(1) and zml(1) are the most recent observations
-%     kw = flip(kw);
-%     zml = flip(zml);
-% 
-% %--- Create weighting and fraction ML ventilated vectors
-%     wt = nan(size(kw)); %weighting
-%     fr = nan(size(kw)); %fraction ventilated
-%     
-%     wt(1) = 1; %assign weighting of 1 to "today's"/most recent observation
-%     fr(1) = kw(1).*dt./zml(1); %calculate fraction ventilated on day of sampling
-%     
-% %--- go backwards and fill in vectors
-%     for ff = 2:ndays/dt+1;
-%         fr(ff) = kw(ff).*dt./zml(ff); %fraction of mld ventilated
-%         if fr(ff)>=1; fr(ff)=.9999; end
-%         wt(ff) = wt(ff-1).*(1-fr(ff));
-%     end
-%   
-% %--- Calculate weighted kw
-%     prod = kw.*wt; %the product of kw * weight for each observation
-%     
-%     kw_wt = (sum(prod)) / (sum(wt));
-    
+        
 end

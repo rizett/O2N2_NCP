@@ -54,11 +54,21 @@ function fname = save_fig(dir,name,type,res)
             end
             print(gcf,[fname,'_high-res.jpg'],'-djpeg',res);
         elseif strcmp(type{kk},'hr_tif')
-            % set resolution
-            if nargin < 4
-                res = 300;
+            if ispc
+                % set resolution
+                if nargin < 4
+                    res = 300;
+                end
+                exportgraphics(gcf,[fname,'_high-res.tif'],'Resolution',res)
+            else
+                % set resolution
+                if nargin < 4
+                    res = '-r500';
+                else
+                    res = ['-r',num2str(res)];
+                end
+                print(gcf,[fname,'_high-res.tif'],'-dtiff',res);
             end
-            exportgraphics(gcf,[fname,'_high-res.tif'],'Resolution',res)
         end
             
     end
