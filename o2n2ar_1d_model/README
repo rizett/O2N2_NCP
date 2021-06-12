@@ -1,7 +1,7 @@
-﻿This folder contains scripts, forcing data and example output for performing 1D MLD model simulations described in Izett & Tortell (In review). 
+﻿This folder contains scripts, forcing data and example output for performing 1D MLD model simulations described in Izett & Tortell (Accepted). 
 
 IzettTortell2020_1d_simulations.m = the main script used to run model simulations
 o2arn2_1d_model.m = the model function, which is called-to in the main script, and which uses several ancillary files from /o2n2ar_1d_model/ancillary_scripts
 examples = contains forcing data for running simulations.
 
-Izett, R. W. & Tortell, P.D. In review. ΔO2/N2' as a Tracer of Mixed Layer Net Community Production: Theoretical Considerations and Proof-of-Concept. Submitted to Global Biogeochemical Cycles Sep. 2020.
+Izett, R. W. & Tortell, P.D. Accepted May 2021. ΔO2/N2' as a Tracer of Mixed Layer Net Community Production: Theoretical Considerations and Proof-of-Concept. Limnology & Oceanography: Methods
